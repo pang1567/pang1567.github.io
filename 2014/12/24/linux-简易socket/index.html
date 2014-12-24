@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>linux 简易socket | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="linux下socket简易客户端和服务器代码，做测试用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux 简易socket">
+<meta property="og:url" content="http://yoursite.com/2014/12/24/linux-简易socket/">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="linux下socket简易客户端和服务器代码，做测试用">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux 简易socket">
+<meta name="twitter:description" content="linux下socket简易客户端和服务器代码，做测试用">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<div class="profilepic">
+			<img src="/img/dishes.png">
+		</div>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Dishes Pang</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/u/1784612647" title="weibo">weibo</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud">
+						<a href="/tags/linux/" style="font-size: NaNpx;">linux</a><a href="/tags/socket/" style="font-size: NaNpx;">socket</a><a href="/tags/关于/" style="font-size: NaNpx;">关于</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					在读研究生一枚。喜欢剖析技术背后实现的原理；热爱开源，喜欢以技术交友；
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay"></div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img src="/img/dishes.png">
+			</div>
+
+			<hgroup>
+			  <h1 class="header-author"><a href="/">Dishes Pang</a></h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/1784612647" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <article id="post-linux-简易socket" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/12/24/linux-简易socket/" class="article-date">
+  	<time datetime="2014-12-24T03:48:03.000Z" itemprop="datePublished">Dec 24 2014</time>
+</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/socket/">socket</a></li></ul>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      linux 简易socket
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>linux下socket简易客户端和服务器代码，做测试用<br><a id="more"></a></p>
+<h2 id="服务器代码">服务器代码</h2>
+<p><code>server.c</code>监测任意地址通过端口<code>SERV_PORT</code>过来的连接</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;sys/socket.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;sys/types.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;errno.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;netinet/in.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;sys/un.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;arpa/inet.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;unistd.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;string.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;stdlib.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;time.h&gt;</span></div><div class="line"> </div><div class="line"><span class="preprocessor">#<span class="keyword">define</span> SERV_PORT 4564</span></div><div class="line"><span class="preprocessor">#<span class="keyword">define</span> LISTENQ   100</span></div><div class="line"><span class="preprocessor">#<span class="keyword">define</span> BUFF_SIZE 1024</span></div><div class="line"> </div><div class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc,<span class="keyword">char</span> *argv[])</div><div class="line">{</div><div class="line">    <span class="keyword">int</span> listenfd = socket(AF_INET,SOCK_STREAM,<span class="number">0</span>);</div><div class="line">    <span class="keyword">if</span>(-<span class="number">1</span> == listenfd)</div><div class="line">    {</div><div class="line">        perror(strerror(errno));</div><div class="line">    }   </div><div class="line">     </div><div class="line">    <span class="keyword">struct</span> sockaddr_in servaddr;</div><div class="line">    <span class="built_in">memset</span>(&servaddr,<span class="number">0</span>,<span class="keyword">sizeof</span>(servaddr));</div><div class="line">    servaddr.sin_family = AF_INET;</div><div class="line">    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);</div><div class="line">    servaddr.sin_port = htons(SERV_PORT);</div><div class="line">    <span class="keyword">if</span>(-<span class="number">1</span> == bind(listenfd,(<span class="keyword">struct</span> sockaddr*)&servaddr,</div><div class="line">                    <span class="keyword">sizeof</span>(servaddr)))</div><div class="line">    {</div><div class="line">        perror(strerror(errno));</div><div class="line">    }</div><div class="line"> </div><div class="line">    listen(listenfd, LISTENQ);</div><div class="line">     </div><div class="line">    <span class="keyword">struct</span> sockaddr_in client;</div><div class="line">    <span class="keyword">int</span> n = <span class="keyword">sizeof</span>(client);</div><div class="line">    <span class="keyword">int</span> connetfd;</div><div class="line">    pid_t child_pid;</div><div class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</div><div class="line">    {   </div><div class="line">        connetfd = accept(listenfd,(<span class="keyword">struct</span> sockaddr*)&client,</div><div class="line">                        &n);</div><div class="line">        <span class="keyword">if</span>(connetfd == -<span class="number">1</span>)</div><div class="line">        {   </div><div class="line">            perror(strerror(errno));</div><div class="line">        }</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"有%s客户端的连接\n"</span>,inet_ntoa(client.sin_addr));</div><div class="line">        child_pid = fork();</div><div class="line">        <span class="keyword">if</span>(child_pid == -<span class="number">1</span>)</div><div class="line">        {</div><div class="line">            perror(strerror(errno));</div><div class="line">        }   </div><div class="line">        <span class="keyword">if</span>(child_pid == <span class="number">0</span>)</div><div class="line">        {</div><div class="line">            close(listenfd);</div><div class="line">            <span class="keyword">char</span> buf[BUFF_SIZE] = {<span class="number">0</span>};</div><div class="line">             </div><div class="line">            time_t n = time(NULL);</div><div class="line">            <span class="keyword">struct</span> tm *t;</div><div class="line">            t = localtime(&n);  </div><div class="line">            <span class="built_in">sprintf</span>(buf,<span class="string">"%02d:%02d:%02d"</span>,t-&gt;tm_hour,t-&gt;tm_min,t-&gt;tm_sec);</div><div class="line">            write(connetfd,buf,<span class="built_in">strlen</span>(buf));</div><div class="line">            <span class="built_in">printf</span>(<span class="string">"已经把%s发到%s\n"</span>,buf,inet_ntoa(client.sin_addr));</div><div class="line"> </div><div class="line">            close(connetfd);</div><div class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">        }</div><div class="line">        close(connetfd);</div><div class="line">    }</div><div class="line">     </div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;   </div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h2 id="客户端代码">客户端代码</h2>
+<p>客户端连接本地环回地址，端口为<code>SERV_PORT</code></p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;sys/socket.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;string.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;errno.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;netinet/in.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;stdlib.h&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;arpa/inet.h&gt;</span></div><div class="line"> </div><div class="line"><span class="preprocessor">#<span class="keyword">define</span> SERV_PORT 4564</span></div><div class="line"><span class="preprocessor">#<span class="keyword">define</span> BUFF_SIZE 1024</span></div><div class="line"> </div><div class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc,<span class="keyword">char</span> *argv[])</div><div class="line">{</div><div class="line">    <span class="keyword">int</span> sockfd = socket(AF_INET,SOCK_STREAM,<span class="number">0</span>);</div><div class="line">    <span class="keyword">if</span>(sockfd == -<span class="number">1</span>)</div><div class="line">        perror(strerror(errno));</div><div class="line">     </div><div class="line">    <span class="keyword">struct</span> sockaddr_in servaddr;</div><div class="line">    <span class="built_in">memset</span>(&servaddr,<span class="number">0</span>,<span class="keyword">sizeof</span>(servaddr));</div><div class="line">    servaddr.sin_family = AF_INET;</div><div class="line">    servaddr.sin_port = htons(SERV_PORT);</div><div class="line">    inet_aton(argv[<span class="number">1</span>],&servaddr.sin_addr);</div><div class="line">    <span class="keyword">if</span>(connect(sockfd,(<span class="keyword">struct</span> sockaddr*)&servaddr,<span class="keyword">sizeof</span>(servaddr)) == -<span class="number">1</span>)</div><div class="line">        perror(strerror(errno)),<span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"连接到%s\n"</span>,argv[<span class="number">1</span>]);</div><div class="line">         </div><div class="line">    <span class="keyword">char</span> buf[BUFF_SIZE] = {<span class="number">0</span>};  </div><div class="line">    read(sockfd,buf,<span class="keyword">sizeof</span>(buf));</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"%s\n"</span>,buf);</div><div class="line"> </div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2014/12/23/About/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">About</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="linux-简易socket" data-title="linux 简易socket" data-url="http://yoursite.com/2014/12/24/linux-简易socket/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"pang1567"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2014 Dishes Pang
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+  <script src="/js/main.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>
