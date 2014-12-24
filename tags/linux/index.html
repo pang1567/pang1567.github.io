@@ -104,7 +104,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud">
-						<a href="/tags/linux/" style="font-size: NaNpx;">linux</a><a href="/tags/socket/" style="font-size: NaNpx;">socket</a><a href="/tags/关于/" style="font-size: NaNpx;">关于</a>
+						<a href="/tags/epoll/" style="font-size: 10.00px;">epoll</a><a href="/tags/linux/" style="font-size: 20.00px;">linux</a><a href="/tags/socket/" style="font-size: 10.00px;">socket</a><a href="/tags/关于/" style="font-size: 10.00px;">关于</a>
 					</div>
 				</section>
 				
@@ -159,6 +159,58 @@
 	</div>
 </nav>
       
+  
+    <article id="post-Event-Poll-epoll-详解" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/12/24/Event-Poll-epoll-详解/" class="article-date">
+  	<time datetime="2014-12-24T03:59:15.000Z" itemprop="datePublished">Dec 24 2014</time>
+</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/epoll/">epoll</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/12/24/Event-Poll-epoll-详解/">Event Poll epoll 详解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>由于<code>poll()</code>和<code>select()</code>的局限，2.6内核引入了<code>event poll(epoll)</code>机制。虽然稍微复杂，但是epoll解决了它们共有的基本性能问题，并增加了一些新的特性。<code>poll()</code>和<code>select()</code>每次调用都需要所有被监听的文件描述符。内核必须遍历所有被监视的文件描述符。当这个表变得很大时，成千上百的文件描述符，每次调用时的遍历就成为了明显的瓶颈。</p>
+
+        
+          <p class="article-more-link">
+            <a href="/2014/12/24/Event-Poll-epoll-详解/#more">more >></a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-linux-简易socket" class="article article-type-post" itemscope itemprop="blogPost">
   

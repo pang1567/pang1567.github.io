@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Event Poll epoll 详解 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="由于poll()和select()的局限，2.6内核引入了event poll(epoll)机制。虽然稍微复杂，但是epoll解决了它们共有的基本性能问题，并增加了一些新的特性。poll()和select()每次调用都需要所有被监听的文件描述符。内核必须遍历所有被监视的文件描述符。当这个表变得很大时，成千上百的文件描述符，每次调用时的遍历就成为了明显的瓶颈。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Event Poll epoll 详解">
+<meta property="og:url" content="http://yoursite.com/2014/12/24/Event-Poll-epoll-详解/">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="由于poll()和select()的局限，2.6内核引入了event poll(epoll)机制。虽然稍微复杂，但是epoll解决了它们共有的基本性能问题，并增加了一些新的特性。poll()和select()每次调用都需要所有被监听的文件描述符。内核必须遍历所有被监视的文件描述符。当这个表变得很大时，成千上百的文件描述符，每次调用时的遍历就成为了明显的瓶颈。">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Event Poll epoll 详解">
+<meta name="twitter:description" content="由于poll()和select()的局限，2.6内核引入了event poll(epoll)机制。虽然稍微复杂，但是epoll解决了它们共有的基本性能问题，并增加了一些新的特性。poll()和select()每次调用都需要所有被监听的文件描述符。内核必须遍历所有被监视的文件描述符。当这个表变得很大时，成千上百的文件描述符，每次调用时的遍历就成为了明显的瓶颈。">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<div class="profilepic">
+			<img src="/img/dishes.png">
+		</div>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Dishes Pang</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/u/1784612647" title="weibo">weibo</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud">
+						<a href="/tags/epoll/" style="font-size: 10.00px;">epoll</a><a href="/tags/linux/" style="font-size: 20.00px;">linux</a><a href="/tags/socket/" style="font-size: 10.00px;">socket</a><a href="/tags/关于/" style="font-size: 10.00px;">关于</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					在读研究生一枚。喜欢剖析技术背后实现的原理；热爱开源，喜欢以技术交友；
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay"></div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img src="/img/dishes.png">
+			</div>
+
+			<hgroup>
+			  <h1 class="header-author"><a href="/">Dishes Pang</a></h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/1784612647" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <article id="post-Event-Poll-epoll-详解" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/12/24/Event-Poll-epoll-详解/" class="article-date">
+  	<time datetime="2014-12-24T03:59:15.000Z" itemprop="datePublished">Dec 24 2014</time>
+</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/epoll/">epoll</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Event Poll epoll 详解
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>由于<code>poll()</code>和<code>select()</code>的局限，2.6内核引入了<code>event poll(epoll)</code>机制。虽然稍微复杂，但是epoll解决了它们共有的基本性能问题，并增加了一些新的特性。<code>poll()</code>和<code>select()</code>每次调用都需要所有被监听的文件描述符。内核必须遍历所有被监视的文件描述符。当这个表变得很大时，成千上百的文件描述符，每次调用时的遍历就成为了明显的瓶颈。</p>
+<a id="more"></a>
+
+<h2 id="创建一个新的epoll实例">创建一个新的epoll实例</h2>
+<p>使用epoll_create()或者epoll_cerate1()创建一个epoll上下文。这里epoll_cerate1()是epoll_cerate()的扩展版本。</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;sys/epoll.h&gt;</span></div><div class="line"><span class="keyword">int</span> epoll_create (<span class="keyword">int</span> size)</div></pre></td></tr></table></figure>
+
+<p>调用成功后,<code>epoll_create()</code>创建一个<code>epoll</code>实例，返回与该实例关联的文件描述符。这个文件描述符和真正的文件没有关系，仅仅是为了后续调用使用<code>epoll</code>而创建的。size参数告诉内核需要监听的文件描述符数目，但不是最大值。传递一个适当的近似值会带来性能的提升，但不需要给出确切的数字。出错时，返回-1，设置errno为下列值之一：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">值</th>
+<th style="text-align:center">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">EINVAL</td>
+<td style="text-align:center">size不是正数</td>
+</tr>
+<tr>
+<td style="text-align:center">ENFILE</td>
+<td style="text-align:center">系统达到打开文件数的上限</td>
+</tr>
+<tr>
+<td style="text-align:center">ENOMEN</td>
+<td style="text-align:center">没有足够内存完成该次操作。</td>
+</tr>
+</tbody>
+</table>
+<p>标准调用如下：</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> epfd;</div><div class="line">epfd = epoll_create (<span class="number">100</span>); </div><div class="line"><span class="keyword">if</span> (epfd &lt;<span class="number">0</span> )</div><div class="line">    perror(<span class="string">"epoll_create"</span>);</div></pre></td></tr></table></figure>
+
+<p><code>epoll_creat</code>e返回的文件描述符需要用<code>close()</code>关闭。</p>
+<h2 id="控制_epoll">控制 epoll</h2>
+<p><code>epoll_ctl</code> 可以向指定的epoll上下文加入或删除文件描述符：</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;sys/epoll.h&gt;</span></div><div class="line"><span class="keyword">int</span> epoll_ctl (<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, <span class="keyword">struct</span> epoll_event *event);</div></pre></td></tr></table></figure>
+
+<p>头文件<code>&lt;sys/epoll.h&gt;</code>中定义了<code>epoll event</code>结构体</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> epoll_event {</div><div class="line">    _u32 events;</div><div class="line">    <span class="keyword">union</span> {</div><div class="line">    <span class="keyword">void</span> * ptr;</div><div class="line">    <span class="keyword">int</span> fd;</div><div class="line">    _u32 u32;</div><div class="line">    _u64 u64;</div><div class="line">    }data;</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p><code>epoll_ctl()</code>成功调用将关联epoll实例和epfd。参数op指定对fd要进行的操作。event参数描述epoll更具体的行为以下是参数op的有效值：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">值</th>
+<th style="text-align:center">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">EPOLL_CTL_ADD</td>
+<td style="text-align:center">把fd指定的文件添加到epfd指定的epoll实例监听集中，监听event中定义的事件</td>
+</tr>
+<tr>
+<td style="text-align:center">EPOLL_CTL_DEL</td>
+<td style="text-align:center">把fd指定的文件从epfd指定的epoll监听集中删除。</td>
+</tr>
+<tr>
+<td style="text-align:center">EPOLL_CTL_MOD</td>
+<td style="text-align:center">使用event改变在已有fd上的监听行为。</td>
+</tr>
+</tbody>
+</table>
+<p><code>epoll_event</code>结构体中的event参数列出了在给定文件描述符上监听的事件。多个事件可以使用位或运算同时指定。以下是有效值：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">值</th>
+<th style="text-align:center">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">EPOLLERR</td>
+<td style="text-align:center">文件出错。即使不设置这个标志，这个事件也是被监听的。</td>
+</tr>
+<tr>
+<td style="text-align:center">EPOLLET</td>
+<td style="text-align:center">使用边沿触发。默认是水平触发。</td>
+</tr>
+<tr>
+<td style="text-align:center">EPOLLHUP</td>
+<td style="text-align:center">文件被挂起。即使不设置这个标志，这个事件也是被监听的。</td>
+</tr>
+<tr>
+<td style="text-align:center">EPOLLIN</td>
+<td style="text-align:center">文件未阻塞，可读。</td>
+</tr>
+<tr>
+<td style="text-align:center">EPOLLONESHOT</td>
+<td style="text-align:center">在一次事件产生被处理之后，文件不在被监听。必须不再被监听。必须使用EPOLL_CTL_MOD指定新的事件，以便重新监听文件。</td>
+</tr>
+<tr>
+<td style="text-align:center">EPOLLOUT</td>
+<td style="text-align:center">文件未阻塞，可写。</td>
+</tr>
+<tr>
+<td style="text-align:center">EPOLLPRI</td>
+<td style="text-align:center">高优先级的带外数据可读。</td>
+</tr>
+</tbody>
+</table>
+<p><code>event_poll</code>中的data字段由用户使用。确认监听事件后，data会被返回给用户。通常将event.data.fd设定为fd，这样就可以知道那个文件描述符触发事件。<br>成功后，epoll_ctl()返回0.失败返回-1，并设置errno为下列值：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">值</th>
+<th style="text-align:center">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">EBADF</td>
+<td style="text-align:center">epfd不是一个有效的epoll实例，或者fd不是有效文件描述符。</td>
+</tr>
+<tr>
+<td style="text-align:center">EEXIST</td>
+<td style="text-align:center">op为EPOLL_CTL_ADD，但是fd已经与epfd关联。</td>
+</tr>
+<tr>
+<td style="text-align:center">EINVAL</td>
+<td style="text-align:center">epfd不是一个epoll实例，epfd和fd相同，或者op无效。</td>
+</tr>
+<tr>
+<td style="text-align:center">ENOENT</td>
+<td style="text-align:center">op是EPOLL_CTL_MOD或者是EPOLL_CTL_DEL，但是fd没有与epfd关联。</td>
+</tr>
+<tr>
+<td style="text-align:center">ENOMEN</td>
+<td style="text-align:center">没有足够内存完成进程的请求。</td>
+</tr>
+<tr>
+<td style="text-align:center">EPERM</td>
+<td style="text-align:center">fd不支持epoll。</td>
+</tr>
+</tbody>
+</table>
+<p>在epfd实例中加入一个fd指定的监听文件，使用如下代码：</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> epoll_event event;</div><div class="line"><span class="keyword">int</span> ret;</div><div class="line">event.data.fd = fd;<span class="comment">/*return the fd to us later*/</span></div><div class="line">event.events = EPOLLIN|EPOLLOUT  ;</div><div class="line">ret = epoll_ctl (epfd,EPOLL_CTL_MOD,fd,&event);</div><div class="line"><span class="keyword">if</span> (ret)</div><div class="line">    perror (<span class="string">"epoll_ctl"</span>);</div></pre></td></tr></table></figure>
+
+<p>修改epfd实例中的fd上的一个监听事件,可以使用如下代码:</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> epoll_event event;</div><div class="line"><span class="keyword">int</span> ret;</div><div class="line">event.data.fd = fd;<span class="comment">/*return the fd to us later*/</span></div><div class="line">event.events = EPOLLIN ;</div><div class="line">ret = epoll_ctl (epfd,EPOLL_CTL_MOD,fd,&event);</div><div class="line"><span class="keyword">if</span> (ret)</div><div class="line">    perror (<span class="string">"epoll_ctl"</span>);</div></pre></td></tr></table></figure>
+
+<p>删除一个fd监听事件,可以使用如下代码:</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> epoll_event event;</div><div class="line"><span class="keyword">int</span> ret;</div><div class="line">event.data.fd = fd;<span class="comment">/*return the fd to us later*/</span></div><div class="line">event.events = EPOLLIN ;</div><div class="line">ret = epoll_ctl (epfd,EPOLL_CTL_DEL,fd,&event);</div><div class="line"><span class="keyword">if</span> (ret)</div><div class="line">    perror (<span class="string">"epoll_ctl"</span>);</div></pre></td></tr></table></figure>
+
+<h2 id="等待Epoll事件">等待Epoll事件</h2>
+<p>epoll_wait()等待给定epoll实例关联的文件描述符上的事件：</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;sys/epoll.h&gt;</span></div><div class="line"><span class="keyword">int</span> epoll_wait (<span class="keyword">int</span> epfd, <span class="keyword">struct</span> epoll_event * </div><div class="line">    * events, <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout);</div></pre></td></tr></table></figure>
+
+<p>对epoll_wait()的调用等待epoll实例epfd中的文件fd上的事件，时限为timeout毫秒。成功返回，struct epoll_event *events指向包含epoll_event结构体（该结构体描述了每个事件）的内存，且最多可以有maxevents个事件。这样可以根据events结构体来确定哪些fd触发了事件，从而做出相应的处理。返回值是事件数，出错返回1，并将errno设置为以下值:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">值</th>
+<th style="text-align:center">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">EBADF</td>
+<td style="text-align:center">epfd是无效文件描述符</td>
+</tr>
+<tr>
+<td style="text-align:center">EFAULT</td>
+<td style="text-align:center">进程对events指向的内存无写权限</td>
+</tr>
+<tr>
+<td style="text-align:center">EINTR</td>
+<td style="text-align:center">系统调用在完成前被信号中断</td>
+</tr>
+<tr>
+<td style="text-align:center">EINVAL</td>
+<td style="text-align:center">epfd不是有效的epoll实例，或者maxevents小于等于0</td>
+</tr>
+</tbody>
+</table>
+<p>如果timeout 为0.即使没有事件发生，调用也立即发生，此时调用返回0.如果timeout为-1，调用将一直等待到有事件发生。<br>当调用epoll_wait()返回，<strong>epoll_event结构体中的events数组描述了一次等待发生的事件，最多返回maxevents个事件。</strong>data字段包含了用户在调用epoll_ctl前的设置，如文件的句柄，用来区分那个文件所发生的事件。</p>
+<p>一个完整的epoll_wait()例子如下：</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">define</span> MAX_EVENTS   64</span></div><div class="line"><span class="keyword">struct</span> epoll_event * events = NULL;</div><div class="line"><span class="keyword">int</span> nr_events, i, epfd;</div><div class="line">events = <span class="built_in">malloc</span> (<span class="keyword">sizeof</span>(<span class="keyword">struct</span> epoll_event) * MAX_EVENTS);</div><div class="line"><span class="keyword">if</span> (! events ){</div><div class="line">    perror(<span class="string">"malloc"</span>);</div><div class="line">    <span class="built_in">exit</span>(-<span class="number">1</span>);</div><div class="line">}</div><div class="line">nr_events = epoll_wait (epfd,events,MAX_EVENTS,-<span class="number">1</span>);</div><div class="line"><span class="keyword">if</span> (nr_events &lt; <span class="number">0</span>){</div><div class="line">    perror(<span class="string">"epoll_wait"</span>);</div><div class="line">    <span class="built_in">free</span>(events);</div><div class="line">    <span class="built_in">exit</span> (-<span class="number">1</span>);</div><div class="line">}</div><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;nr_eventsl i++)</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"event = %d on fd = %d \n"</span>,</div><div class="line">        events[i].events,events[i].data.fd);</div></pre></td></tr></table></figure>
+
+<h2 id="边沿触发时间和水平触发事件">边沿触发时间和水平触发事件</h2>
+<p>EPOLL事件有两种模型 <strong>Level Triggered (LT) 和 Edge Triggered (ET)</strong>：</p>
+<p>LT(level triggered，水平触发模式)是缺省的工作方式，并且同时支持 block 和 non-block socket。在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的，所以，这种模式编程出错误可能性要小一点。</p>
+<p>ET(edge-triggered，边缘触发模式)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，等到下次有新的数据进来的时候才会再次出发就绪事件。</p>
+<h2 id="man_epoll_中的实例">man epoll 中的实例</h2>
+<p>setnonblocking()函数将socket文件设置为非阻塞，因为使用的是ET模式。do_use_fd()是对此文件做出一定的处理，如读写等。</p>
+<figure class="highlight C"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">define</span> MAX_EVENTS 10</span></div><div class="line"><span class="keyword">struct</span> epoll_event ev, events[MAX_EVENTS];</div><div class="line"><span class="keyword">int</span> listen_sock, conn_sock, nfds, epollfd;</div><div class="line"> </div><div class="line"><span class="comment">/* Set up listening socket, 'listen_sock' (socket(),</span></div><div class="line">    bind(), listen()) */</div><div class="line"> </div><div class="line">epollfd = epoll_create(<span class="number">10</span>);</div><div class="line"><span class="keyword">if</span> (epollfd == -<span class="number">1</span>) {</div><div class="line">    perror(<span class="string">"epoll_create"</span>);</div><div class="line">    <span class="built_in">exit</span>(EXIT_FAILURE);</div><div class="line">}</div><div class="line"> </div><div class="line">ev.events = EPOLLIN;</div><div class="line">ev.data.fd = listen_sock;</div><div class="line"><span class="keyword">if</span> (epoll_ctl(epollfd, EPOLL_CTL_ADD, listen_sock, &ev) == -<span class="number">1</span>) {</div><div class="line">    perror(<span class="string">"epoll_ctl: listen_sock"</span>);</div><div class="line">    <span class="built_in">exit</span>(EXIT_FAILURE);</div><div class="line">}</div><div class="line"> </div><div class="line"><span class="keyword">for</span> (;;) {</div><div class="line">    nfds = epoll_wait(epollfd, events, MAX_EVENTS, -<span class="number">1</span>);</div><div class="line">    <span class="keyword">if</span> (nfds == -<span class="number">1</span>) {</div><div class="line">        perror(<span class="string">"epoll_pwait"</span>);</div><div class="line">        <span class="built_in">exit</span>(EXIT_FAILURE);</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="keyword">for</span> (n = <span class="number">0</span>; n &lt; nfds; ++n) {</div><div class="line">        <span class="keyword">if</span> (events[n].data.fd == listen_sock) {</div><div class="line">            conn_sock = accept(listen_sock,</div><div class="line">                            (<span class="keyword">struct</span> sockaddr *) &local, &addrlen);</div><div class="line">            <span class="keyword">if</span> (conn_sock == -<span class="number">1</span>) {</div><div class="line">                perror(<span class="string">"accept"</span>);</div><div class="line">                <span class="built_in">exit</span>(EXIT_FAILURE);</div><div class="line">            }</div><div class="line">            setnonblocking(conn_sock);</div><div class="line">            ev.events = EPOLLIN | EPOLLET;</div><div class="line">            ev.data.fd = conn_sock;</div><div class="line">            <span class="keyword">if</span> (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock,</div><div class="line">                        &ev) == -<span class="number">1</span>) {</div><div class="line">                perror(<span class="string">"epoll_ctl: conn_sock"</span>);</div><div class="line">                <span class="built_in">exit</span>(EXIT_FAILURE);</div><div class="line">            }</div><div class="line">        } <span class="keyword">else</span> {</div><div class="line">            do_use_fd(events[n].data.fd);</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2014/12/24/linux-简易socket/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">linux 简易socket</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="Event-Poll-epoll-详解" data-title="Event Poll epoll 详解" data-url="http://yoursite.com/2014/12/24/Event-Poll-epoll-详解/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"pang1567"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2014 Dishes Pang
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+  <script src="/js/main.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>
