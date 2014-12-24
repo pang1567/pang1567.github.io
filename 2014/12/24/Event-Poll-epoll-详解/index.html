@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Event Poll epoll 详解 | Hexo</title>
+  <title>Event Poll epoll 详解 | Dishes Pang</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="由于poll()和select()的局限，2.6内核引入了event poll(epoll)机制。虽然稍微复杂，但是epoll解决了它们共有的基本性能问题，并增加了一些新的特性。poll()和select()每次调用都需要所有被监听的文件描述符。内核必须遍历所有被监视的文件描述符。当这个表变得很大时，成千上百的文件描述符，每次调用时的遍历就成为了明显的瓶颈。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Event Poll epoll 详解">
 <meta property="og:url" content="http://yoursite.com/2014/12/24/Event-Poll-epoll-详解/">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Dishes Pang">
 <meta property="og:description" content="由于poll()和select()的局限，2.6内核引入了event poll(epoll)机制。虽然稍微复杂，但是epoll解决了它们共有的基本性能问题，并增加了一些新的特性。poll()和select()每次调用都需要所有被监听的文件描述符。内核必须遍历所有被监视的文件描述符。当这个表变得很大时，成千上百的文件描述符，每次调用时的遍历就成为了明显的瓶颈。">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Event Poll epoll 详解">
 <meta name="twitter:description" content="由于poll()和select()的局限，2.6内核引入了event poll(epoll)机制。虽然稍微复杂，但是epoll解决了它们共有的基本性能问题，并增加了一些新的特性。poll()和select()每次调用都需要所有被监听的文件描述符。内核必须遍历所有被监视的文件描述符。当这个表变得很大时，成千上百的文件描述符，每次调用时的遍历就成为了明显的瓶颈。">
 
   
-    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="Dishes Pang" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
