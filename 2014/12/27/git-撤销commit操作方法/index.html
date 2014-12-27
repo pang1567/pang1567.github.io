@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2014/12 | Dishes Pang</title>
+  <title>git 撤销commit操作方法 | Dishes Pang</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Dishes Pang">
-<meta property="og:url" content="http://yoursite.com/archives/2014/12/">
+  <meta name="description" content="我们在git push时，会不小心把一些私密信息（比如账号）提交到github上，想要不让别人看到我们的commit记录，该怎么做？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git 撤销commit操作方法">
+<meta property="og:url" content="http://yoursite.com/2014/12/27/git-撤销commit操作方法/">
 <meta property="og:site_name" content="Dishes Pang">
-<meta property="og:description">
+<meta property="og:description" content="我们在git push时，会不小心把一些私密信息（比如账号）提交到github上，想要不让别人看到我们的commit记录，该怎么做？">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Dishes Pang">
-<meta name="twitter:description">
+<meta name="twitter:title" content="git 撤销commit操作方法">
+<meta name="twitter:description" content="我们在git push时，会不小心把一些私密信息（比如账号）提交到github上，想要不让别人看到我们的commit记录，该怎么做？">
 
   
     <link rel="alternative" href="/atom.xml" title="Dishes Pang" type="application/atom+xml">
@@ -171,9 +171,7 @@ ga('send', 'pageview');
 		</header>				
 	</div>
 </nav>
-      
-  
-    <article id="post-git-撤销commit操作方法" class="article article-type-post" itemscope itemprop="blogPost">
+      <article id="post-git-撤销commit操作方法" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
       <a href="/2014/12/27/git-撤销commit操作方法/" class="article-date">
@@ -193,8 +191,8 @@ ga('send', 'pageview');
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/12/27/git-撤销commit操作方法/">git 撤销commit操作方法</a>
+    <h1 class="article-title" itemprop="name">
+      git 撤销commit操作方法
     </h1>
   
 
@@ -202,12 +200,21 @@ ga('send', 'pageview');
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>我们在git push时，会不小心把一些私密信息（比如账号）提交到github上，想要不让别人看到我们的commit记录，该怎么做？<br>
-        
-          <p class="article-more-link">
-            <a href="/2014/12/27/git-撤销commit操作方法/#more">more >></a>
-          </p>
-        
+        <p>我们在git push时，会不小心把一些私密信息（比如账号）提交到github上，想要不让别人看到我们的commit记录，该怎么做？<br><a id="more"></a></p>
+<h2 id="commit">commit</h2>
+<p>Git上每次我们push后，在github上都会有对应的commit记录，假设我们错误把一些私密信息（如密码等）提交到github上，那么我们把私密信息删掉再commit，push虽然在文件里看不到私密信息，但是在commit记录里还是可以看到更改记录的，也就是我们的私密信息还是会被看到。这就需要我们撤销提交密码的那次操作，具体操作如下：</p>
+<h2 id="察看commit记录">察看commit记录</h2>
+<p>先使用git log 查看 commit日志</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git <span class="built_in">log</span></div></pre></td></tr></table></figure>
+
+<p>找到需要回退的那次commit的 哈希值，</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="operator"><span class="keyword">commit</span> <span class="number">9</span>ee5a8794cf85d4af2cca81273862bc043061107</span></div><div class="line">Author: pang1567 &lt;<span class="number">567.2008</span>@<span class="number">163.</span>com&gt;</div><div class="line"><span class="built_in">Date</span>:   Sat <span class="built_in">Dec</span> <span class="number">27</span> <span class="number">11</span>:<span class="number">07</span>:<span class="number">27</span> <span class="number">2014</span> +<span class="number">0800</span></div><div class="line"></div><div class="line">    修改了<span class="keyword">data</span>.md</div></pre></td></tr></table></figure>
+
+<h2 id="回退到相应的commit">回退到相应的commit</h2>
+<p>具体操作如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git <span class="operator"><span class="keyword">reset</span> <span class="comment">--hard &lt;commit_id&gt;</span></span></div><div class="line"></div><div class="line">git push origin HEAD <span class="comment">--force</span></div></pre></td></tr></table></figure>
+
+
       
     </div>
     <footer class="article-footer">
@@ -216,173 +223,59 @@ ga('send', 'pageview');
     </footer>
   </div>
   
-</article>
-
-
-
-
-
-
-  
-    <article id="post-Event-Poll-epoll-详解" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/12/24/Event-Poll-epoll-详解/" class="article-date">
-  	<time datetime="2014-12-24T03:59:15.000Z" itemprop="datePublished">Dec 24 2014</time>
-</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/epoll/">epoll</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
-
-    </div>
-  
-  <div class="article-inner">
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/12/24/Event-Poll-epoll-详解/">Event Poll epoll 详解</a>
-    </h1>
   
+    <a href="/2014/12/24/Event-Poll-epoll-详解/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Event Poll epoll 详解</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>由于<code>poll()</code>和<code>select()</code>的局限，2.6内核引入了<code>event poll(epoll)</code>机制。虽然稍微复杂，但是epoll解决了它们共有的基本性能问题，并增加了一些新的特性。<code>poll()</code>和<code>select()</code>每次调用都需要所有被监听的文件描述符。内核必须遍历所有被监视的文件描述符。当这个表变得很大时，成千上百的文件描述符，每次调用时的遍历就成为了明显的瓶颈。</p>
-
-        
-          <p class="article-more-link">
-            <a href="/2014/12/24/Event-Poll-epoll-详解/#more">more >></a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-    </footer>
-  </div>
   
 </article>
 
 
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
 
 
 
-
-  
-    <article id="post-linux-简易socket" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/12/24/linux-简易socket/" class="article-date">
-  	<time datetime="2014-12-24T03:48:03.000Z" itemprop="datePublished">Dec 24 2014</time>
-</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/socket/">socket</a></li></ul>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/12/24/linux-简易socket/">linux 简易socket</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>linux下socket简易客户端和服务器代码，做测试用<br>
-        
-          <p class="article-more-link">
-            <a href="/2014/12/24/linux-简易socket/#more">more >></a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-    </footer>
-  </div>
-  
-</article>
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="git-撤销commit操作方法" data-title="git 撤销commit操作方法" data-url="http://yoursite.com/2014/12/27/git-撤销commit操作方法/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"pang1567"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
 
 
 
-
-
-
-  
-    <article id="post-About" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/12/23/About/" class="article-date">
-  	<time datetime="2014-12-23T08:18:40.000Z" itemprop="datePublished">Dec 23 2014</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/linux/">linux</a>
-  </div>
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/关于/">关于</a></li></ul>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/12/23/About/">About</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>我叫小菜庞，英文名Dishes Pang，为什么叫小菜庞，之前玩三国杀作为突发奇想起了这么一个别名，然后我的同学注册三国杀也是各种小菜罗、小菜李等网名，整的我们玩三国杀别人进去一看就是黑房（各种Dishes，嘿嘿），后来发现这个名字挺适合我，因为觉得自己很菜，需要一直学习，向大牛看齐，做一个一直学习的Dishes。<br>
-        
-          <p class="article-more-link">
-            <a href="/2014/12/23/About/#more">more >></a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-  
 
       <footer id="footer">
   <div class="outer">
